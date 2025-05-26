@@ -10,5 +10,5 @@
 ###< symfony/framework-bundle ###
 
 ###> phpstan/phpstan ###
-phpstan.neon
+phpstan.dist.neon
 ###< phpstan/phpstan ###
