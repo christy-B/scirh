@@ -20,5 +20,13 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # injecte environment variables
+    App\Service\DatabaseConnection:
+        arguments:
+            $host: '%env(DB_HOST)%'
+            $dbname: '%env(DB_NAME)%'
+            $user: '%env(DB_USER)%'
+            $password: '%env(DB_PASSWORD)%'
+            $port: '%env(int:DB_PORT)%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
