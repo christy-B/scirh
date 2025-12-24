@@ -6,30 +6,14 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ApiResource(
-    shortName: 'utilisateurs',
-    description: 'les utilisateurs',
-    operations:[
-        new Get(),
-        new GetCollection(),
-        new Post(),
-        new Put(),
-        new Patch(),
-        new Delete()
-    ]
-)]
 
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -100,6 +84,10 @@ class User
         return $this;
     }
 
+    public function getUserIdentifier(): string
+    {
+        return $this->user_email;
+    }
     public function getUserEmail(): ?string
     {
         return $this->user_email;
@@ -124,17 +112,20 @@ class User
         return $this;
     }
 
-    public function getUserPassword(): ?string
+    public function getPassword(): ?string
     {
         return $this->user_password;
     }
 
-    public function setUserPassword(string $user_password): static
+    public function setPassword(string $user_password): static
     {
         $this->user_password = $user_password;
 
         return $this;
     }
+
+    public function eraseCredentials(): void {}
+
 
     public function isUserIsActif(): ?bool
     {
@@ -173,11 +164,17 @@ class User
     }
 
     /**
-     * @return Collection<int, Role>
+     * @return array
      */
-    public function getRoles(): Collection
+    public function getRoles(): array
     {
-        return $this->roles;
+        $roles = []; 
+        foreach ($this->roles as $role) {
+            $roles[] = $role->getRoleAttribut();
+        }
+
+
+        return array_unique($roles);
     }
 
     public function addRole(Role $role): static
